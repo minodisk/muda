@@ -1162,6 +1162,13 @@ fn menuitem_set_icon(menuitem: &NSMenuItem, icon: Option<&Icon>) {
     if let Some(icon) = icon {
         unsafe {
             let nsimage = icon.inner.to_nsimage(Some(18.));
+            // Riffle fork: treat every custom menu image as a template so macOS
+            // recolours it with the menu appearance, the way the built-in items
+            // are drawn. Upstream does this behind an opt-in flag instead; see
+            // https://github.com/tauri-apps/muda/pull/413. This branch exists
+            // only until that lands and Tauri wires the flag through, so it
+            // takes the blunt route rather than adding API.
+            nsimage.setTemplate(true);
             menuitem.setImage(Some(&nsimage));
         }
     } else {
